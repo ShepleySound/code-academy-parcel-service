@@ -1,0 +1,14 @@
+{
+  "name": "caps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js",
+    "test": "NODE_ENV=test jest"
+  },
+  "keywords": [],
+  "author": "Robert Shepley",
+  "license": "MIT"
+}
