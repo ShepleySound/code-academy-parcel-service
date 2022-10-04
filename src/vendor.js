@@ -1,5 +1,14 @@
 const { eventPool } = require('./event-pool');
 
+class Order {
+  constructor(store, orderID, customer, address) {
+    this.store = store;
+    this.orderID = orderID;
+    this.customer = customer;
+    this.address = address;
+  }
+}
+
 class Vendor {
   constructor(store) {
     this.store = store;
@@ -10,17 +19,14 @@ class Vendor {
 
   }
 
-  createPackage() {
-    return {
-      store: this.store,
-      orderID: '12345qwerty',
-      customer: 'customer12345',
-      address: '12345 qwerty rd',
-    };
+  createOrder() {
+    return new Order(this.store, '12345qwerty', 'customer12345', 'address');
   }
 
   readyPackage() {
-    eventPool.emit('ready', this.createPackage());
+    const order = this.createOrder();
+    order.status = 'ready';
+    eventPool.emit('ready', order);
   }
   
 
