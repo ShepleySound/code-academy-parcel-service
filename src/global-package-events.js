@@ -3,52 +3,60 @@
 // const { eventPool } = require('./event-pool');
 
 class Event {
-  constructor(event, order) {
-    this.event = event;
-    this.time = Date.now();
+  constructor(status, order, driver = null) {
+    this.status = status;
+    this.time = new Date();
     this.order = order;
+    this.driver = driver;
   }
 }
 
-const orders = [];
+const ordersList = [];
+const userMap = {};
 
 module.exports = (io, socket) => {
-  socket.on('ready', async function packageListener(e){
-    console.log(socket.id)
+  socket.on('ready', function packageListener(e){
+    // console.log('A package is ready for pickup.');
     const event = new Event('ready', e);
-    console.log('A package is ready for pickup.');
-    orders.push(e);
+    // console.log(event)
+    ordersList.push(event);
+    // storeID is unique and won't change between sessions.
+    // So, I believe we can map this to the most recent socket.id for some persistence!
+    userMap[event.order.storeID] = socket.id;
   });
 
   socket.on('driver:request', (name, callback) => {
     console.log(`Driver ${name} requested a list of orders.`);
-    orders.length ? callback({
-      orders,
-      count: orders.length,
+    const readyOrders = ordersList.filter(order => {
+      return order.status === 'ready';
+    });
+    readyOrders.length ? callback({
+      orders: readyOrders.map(order => order.order),
+      count: readyOrders.length,
     }) : callback('No orders available');
-    // socket.emit('orders:available', orders);
-    // console.log(socket.id)
   });
 
   socket.on('driver:pickup', (name, callback) => {
-    const givenPackage = orders.shift();
-    givenPackage && callback({
-      givenPackage,
-    })
-    givenPackage && console.log(`Driver ${name} picked up order ${givenPackage.orderID}`)
-    // socket.emit('orders:pickup', givenPackage);
+    const readyIndex = ordersList.findIndex(order => order.status === 'ready');
+    const givenPackage = ordersList[readyIndex];
+    if (givenPackage) {
+      ordersList[readyIndex].status = 'transit';
+      ordersList[readyIndex].time = new Date();
+      ordersList[readyIndex].driver = name;
+      callback(
+        givenPackage,
+      );
+      console.log(`Driver ${name} picked up order ${givenPackage.order.orderID}`);
+      // Use the storeID of the package to determine where the message emits to.
+      socket.to(userMap[givenPackage.order.storeID]).emit('pickup:message', (givenPackage));
+    }
   });
 
-  socket.on('transit', function packageListener(e) {
-    const event = new Event('transit', e);
-    console.log('The package is on its way to the destination.');
-    console.log(event);
-  });
+  socket.on('driver:delivery', (name, deliveredOrder) => {
+    const matchedOrder = ordersList.find(order => deliveredOrder.orderID === order.order.orderID);
+    console.log(`Driver ${name} has delivered order ${deliveredOrder.orderID}`);
+    socket.to(userMap[deliveredOrder.storeID]).emit('delivery:msg', (matchedOrder));
 
-  socket.on('delivered', function packageListener(e) {
-    const event = new Event('delivered', e);
-    console.log('The package has been delivered!');
-    console.log(event);
   });
 };
 

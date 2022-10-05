@@ -12,22 +12,21 @@ const socket = io('http://localhost:3001');
 class Driver {
   constructor() {
     this.name = chance.name();
+    this.currentOrders = [];
     socket.on('ready', function vendorListener(e) {
       // For now we'll just immediately emit new messages.
-      socket.emit('transit', e);
-      console.log(`DRIVER: Order picked up - ${e.orderID}`);
-      socket.emit('delivered', e);
+      // socket.emit('transit', e);
+      // console.log(`DRIVER: Order picked up - ${e.orderID}`);
+      // socket.emit('delivered', e);
     
-      console.log(`DRIVER: Order delivered - ${e.orderID}`);
+      // console.log(`DRIVER: Order delivered - ${e.orderID}`);
     });
   }
 
-  // Use this variable to mock the package pickup...
-  // It means we can only have one for now.
-  pickedOrder;
   requestPackage() {
     socket.emit('driver:request', this.name, (response) => {
-      console.log(response)
+      console.log('--- ORDERS AVAILABLE ---')
+      console.log(response.orders);
     });
     // socket.on('orders:available', function packageResponse(e) {
     //   console.log(e)
@@ -35,18 +34,28 @@ class Driver {
     // console.log(socket.id)
   }
 
-  pickupPackage(orderID) {
+  pickupPackage() {
     socket.emit('driver:pickup', this.name, (response) => {
-      console.log(response, 'woweeeeee')
-    })
+      this.currentOrders.push(response.order);
+      console.log('--- NEW ORDER PICKED UP ---')
+      console.log(response.order)
+      console.log('--- CURRENT ORDERS ---')
+      console.log(this.currentOrders)
+
+    });
   }
 
-  deliverPackage(orderID) {
-
+  deliverPackage(index) {
+    const deliveredOrder = this.currentOrders.splice(index, 1);
+    if (deliveredOrder.length) {
+      socket.emit('driver:delivery', this.name, deliveredOrder[0]);
+      console.log('Package delivered. Thank you!');
+    } else console.log('Package does not exist.');
   }
 };
 
 const driver = new Driver();
-setTimeout(() => driver.requestPackage(), 1000)
-setTimeout(() => driver.pickupPackage(), 3000)
+setTimeout(() => driver.requestPackage(), 2500);
+setTimeout(() => driver.pickupPackage(), 3000);
+setTimeout(() => driver.deliverPackage(), 5000);
 
