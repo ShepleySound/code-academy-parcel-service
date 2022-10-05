@@ -3,17 +3,40 @@
 // const { eventPool } = require('./event-pool');
 
 class Event {
-  constructor(event, payload) {
+  constructor(event, order) {
     this.event = event;
     this.time = Date.now();
-    this.payload = payload;
+    this.order = order;
   }
 }
+
+const orders = [];
+
 module.exports = (io, socket) => {
-  socket.on('ready', function packageListener(e){
+  socket.on('ready', async function packageListener(e){
+    console.log(socket.id)
     const event = new Event('ready', e);
-    console.log('The package is ready for pickup.');
-    console.log(event);
+    console.log('A package is ready for pickup.');
+    orders.push(e);
+  });
+
+  socket.on('driver:request', (name, callback) => {
+    console.log(`Driver ${name} requested a list of orders.`);
+    orders.length ? callback({
+      orders,
+      count: orders.length,
+    }) : callback('No orders available');
+    // socket.emit('orders:available', orders);
+    // console.log(socket.id)
+  });
+
+  socket.on('driver:pickup', (name, callback) => {
+    const givenPackage = orders.shift();
+    givenPackage && callback({
+      givenPackage,
+    })
+    givenPackage && console.log(`Driver ${name} picked up order ${givenPackage.orderID}`)
+    // socket.emit('orders:pickup', givenPackage);
   });
 
   socket.on('transit', function packageListener(e) {
