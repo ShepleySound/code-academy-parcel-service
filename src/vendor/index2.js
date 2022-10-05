@@ -48,19 +48,18 @@ class Vendor {
 
 }
 
-const vendor1 = new Vendor('dc547');
-const vendor2 = new Vendor('b5882');
-const vendor3 = new Vendor('97a03');
-const vendor4 = new Vendor('758f7');
-const vendor5 = new Vendor('f60fd');
+const vendor = new Vendor('b5882');
+// const vendor3 = new Vendor('97a03');
+// const vendor4 = new Vendor('758f7');
+// const vendor5 = new Vendor('f60fd');
 
-setTimeout(() => vendor1.readyOrder(chance.name(), chance.address()), 1500);
-setTimeout(() => vendor1.readyOrder(chance.name(), chance.address()), 1500);
-setTimeout(() => vendor1.readyOrder(chance.name(), chance.address()), 1500);
-setTimeout(() => vendor2.readyOrder(chance.name(), chance.address()), 5000);
-setTimeout(() => vendor3.readyOrder(chance.name(), chance.address()), 8000);
-setTimeout(() => vendor4.readyOrder(chance.name(), chance.address()), 8000);
-setTimeout(() => vendor5.readyOrder(chance.name(), chance.address()), 8000);
+setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 1500);
+setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 2000);
+setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 2500);
+// setTimeout(() => vendor2.readyOrder(chance.name(), chance.address()), 5000);
+// setTimeout(() => vendor3.readyOrder(chance.name(), chance.address()), 8000);
+// setTimeout(() => vendor4.readyOrder(chance.name(), chance.address()), 8000);
+// setTimeout(() => vendor5.readyOrder(chance.name(), chance.address()), 8000);
 
 
 // module.exports = Vendor;

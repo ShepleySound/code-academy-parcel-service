@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 
 
 const io = new Server(3001);
-const registerPackageHandlers = require('./global-package-events');
+const registerPackageHandlers = require('./serverHandlers');
 // const Vendor = require('./vendor');
 // const Driver = require('./driver');
 

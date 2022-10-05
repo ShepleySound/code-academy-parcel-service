@@ -1,6 +1,6 @@
 # Code Academy Parcel Service
 
-The Code Academy Parcel Service is created using Event Driven Architecture. It is being incrementally developed, and will eventually feature Socket.io.
+The Code Academy Parcel Service is created using Event Driven Architecture. It is being incrementally developed and features Socket.IO as the primary building block.
 
 Author: [Robert Shepley](https://github.com/shepleysound)
 <!-- Replace URL's and add more necessary links -->
@@ -29,10 +29,12 @@ Author: [Robert Shepley](https://github.com/shepleysound)
 
 <!-- - In the `config/config.json` file, set your username and password under the 'development' entry. Keep in mind, these both must be wrapped in double quotes. -->
 
-- Run the following command -
+- Run the following commands, in order -
 
   ```bash
-    npm start
+    npm run watch
+    npm run vendor
+    npm run driver
   ```
 
 <!-- - Congratulations! You should now be able to access the application in your browser by navigating to `http://localhost:PORT/`, with `PORT` being the port number that you specified in the .env.
@@ -40,8 +42,8 @@ Author: [Robert Shepley](https://github.com/shepleysound)
 - When run locally, the server currently creates a `memory` file in the project's root directory that contains data for a sqlite3 database. If you would like to clear out the database, you can simply delete this file and it will be freshly created the next time the server is started using `npm start`. -->
 
 ## Tests
-
-- Unit Tests: `npm run test`
+*To be implemented*
+<!-- - Unit Tests: `npm run test` -->
 
 ## Structure Diagram
 

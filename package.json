@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "watch": "nodemon index.js",
-    "test": "NODE_ENV=test jest"
+    "start": "node src/server/index.js",
+    "watch": "nodemon src/server/index.js",
+    "vendor": "nodemon src/vendor/index1.js",
+    "driver": "nodemon src/driver/index.js",
+    "test": ""
   },
   "keywords": [],
   "author": "Robert Shepley",
