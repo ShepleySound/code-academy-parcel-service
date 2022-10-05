@@ -1,6 +1,6 @@
 # Code Academy Parcel Service
 
-The Code Academy Parcel Service is a workshop in 
+The Code Academy Parcel Service is created using Event Driven Architecture. It is being incrementally developed, and will eventually feature Socket.io.
 
 Author: [Robert Shepley](https://github.com/shepleysound)
 <!-- Replace URL's and add more necessary links -->
