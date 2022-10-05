@@ -2,8 +2,9 @@
 const Chance = require('chance');
 const chance = new Chance();
 
-const { eventPool } = require('./event-pool');
-
+// const { eventPool } = require('./event-pool');
+const { io } = require('socket.io-client');
+const socket = io('http://localhost:3000');
 class Order {
   constructor(store, orderID, customer, address) {
     this.store = store;
@@ -16,8 +17,8 @@ class Order {
 class Vendor {
   constructor(store) {
     this.store = store;
-
-    eventPool.on('delivered', function vendorListener(e) {
+    
+    socket.on('delivered', function vendorListener(e) {
       console.log(`Thank you, ${e.customer}`);
     });
 
@@ -34,7 +35,8 @@ class Vendor {
     // For now, we'll just create the order immediately by passing in parameters to this function.
     const order = new Order(this.store, chance.hash(), customer, address);
     // order.status = 'ready';
-    eventPool.emit('ready', order);
+    socket.emit('ready', order);
+    console.log(socket)
   }
   
 
