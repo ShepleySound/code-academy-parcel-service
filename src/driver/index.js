@@ -45,17 +45,17 @@ class Driver {
     });
   }
 
-  deliverPackage(index) {
-    const deliveredOrder = this.currentOrders.splice(index, 1);
-    if (deliveredOrder.length) {
-      socket.emit('driver:delivery', this.name, deliveredOrder[0]);
+  deliverPackage() {
+    const deliveredOrder = this.currentOrders.shift();
+    if (deliveredOrder) {
+      socket.emit('driver:delivery', this.name, deliveredOrder);
       console.log('Package delivered. Thank you!');
     } else console.log('Package does not exist.');
   }
 };
 
 const driver = new Driver();
-setTimeout(() => driver.requestPackage(), 2500);
-setTimeout(() => driver.pickupPackage(), 3000);
-setTimeout(() => driver.deliverPackage(), 5000);
+setInterval(() => driver.requestPackage(), 2500);
+setInterval(() => driver.pickupPackage(), 3000);
+setInterval(() => driver.deliverPackage(), 8000);
 

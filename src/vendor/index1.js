@@ -21,12 +21,12 @@ class Vendor {
     this.location = `${chance.city()}, ${chance.state()}`;
     // HARDCODED FOR NOW, CHANGE THIS LATER
     this.storeID = id;
-    socket.on('delivered', function vendorListener(e) {
-      console.log(`Thank you, ${e.customer}`);
-    });
     socket.on('connect', () => {
-      // console.log(socket.id);
+      socket.emit('vendor:sync', this.storeID)
     });
+    // socket.on('delivered', function vendorListener(e) {
+    //   console.log(`Thank you, ${e.customer}`);
+    // });
     socket.on('pickup:message', ({order, driver, time}) => {
       console.log(`Order ${order.orderID} was picked up by ${driver} at ${time}`)
     });
@@ -65,10 +65,8 @@ const vendor = new Vendor('dc547');
 // const vendor4 = new Vendor('758f7');
 // const vendor5 = new Vendor('f60fd');
 
-setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 1500);
-setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 2000);
-setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 2500);
-// setTimeout(() => vendor2.readyOrder(chance.name(), chance.address()), 5000);
+setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 1000);
+setInterval(() => vendor.readyOrder(chance.name(), chance.address()), 4000);
 // setTimeout(() => vendor3.readyOrder(chance.name(), chance.address()), 8000);
 // setTimeout(() => vendor4.readyOrder(chance.name(), chance.address()), 8000);
 // setTimeout(() => vendor5.readyOrder(chance.name(), chance.address()), 8000);

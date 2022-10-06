@@ -1,5 +1,6 @@
 'use strict';
 
+const { MessageQueue } = require('../../lib/message-queue');
 // const { eventPool } = require('./event-pool');
 
 class Event {
@@ -11,18 +12,23 @@ class Event {
   }
 }
 
+
 const ordersList = [];
 const userMap = {};
 
 module.exports = (io, socket) => {
+  socket.on('vendor:sync', (storeID) => {
+    console.log(storeID);
+    MessageQueue.sync(storeID);
+
+  });
   socket.on('ready', function packageListener(e){
-    // console.log('A package is ready for pickup.');
     const event = new Event('ready', e);
-    // console.log(event)
     ordersList.push(event);
     // storeID is unique and won't change between sessions.
     // So, I believe we can map this to the most recent socket.id for some persistence!
     userMap[event.order.storeID] = socket.id;
+
   });
 
   socket.on('driver:request', (name, callback) => {
@@ -54,9 +60,12 @@ module.exports = (io, socket) => {
 
   socket.on('driver:delivery', (name, deliveredOrder) => {
     const matchedOrder = ordersList.find(order => deliveredOrder.orderID === order.order.orderID);
+    if (matchedOrder) {
+      matchedOrder.time = new Date();
+      matchedOrder.status = 'delivered';
+    }
     console.log(`Driver ${name} has delivered order ${deliveredOrder.orderID}`);
     socket.to(userMap[deliveredOrder.storeID]).emit('delivery:msg', (matchedOrder));
 
   });
 };
-
