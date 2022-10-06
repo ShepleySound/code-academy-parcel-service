@@ -1,6 +1,6 @@
 # Code Academy Parcel Service
 
-The Code Academy Parcel Service is created using Event Driven Architecture. It is being incrementally developed and features Socket.IO as the primary building block.
+The Code Academy Parcel Service is created using Event Driven Architecture. It features Socket.IO and custom message queueing functionality.
 
 Author: [Robert Shepley](https://github.com/shepleysound)
 <!-- Replace URL's and add more necessary links -->
@@ -33,7 +33,8 @@ Author: [Robert Shepley](https://github.com/shepleysound)
 
   ```bash
     npm run watch
-    npm run vendor
+    npm run vendor-one
+    npm run vendor-two
     npm run driver
   ```
 
@@ -44,6 +45,14 @@ Author: [Robert Shepley](https://github.com/shepleysound)
 ## Tests
 *To be implemented*
 <!-- - Unit Tests: `npm run test` -->
+
+## Further Goals
+- [ ] Implement tests
+- [ ] Modularize "driver" client code
+- [ ] Further modularize "vendor" client code
+- [ ] Modularize server-side socket code
+- [ ] Find a way to dynamically instantiate multiple "vendors" and "drivers" while persisting their ID's.
+- [ ] Implement some sort of interactive functionality (web app, CLI, etc.)
 
 ## Structure Diagram
 

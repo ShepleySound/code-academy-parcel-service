@@ -13,49 +13,40 @@ class Driver {
   constructor() {
     this.name = chance.name();
     this.currentOrders = [];
-    socket.on('ready', function vendorListener(e) {
-      // For now we'll just immediately emit new messages.
-      // socket.emit('transit', e);
-      // console.log(`DRIVER: Order picked up - ${e.orderID}`);
-      // socket.emit('delivered', e);
-    
-      // console.log(`DRIVER: Order delivered - ${e.orderID}`);
-    });
   }
 
   requestPackage() {
     socket.emit('driver:request', this.name, (response) => {
-      console.log('--- ORDERS AVAILABLE ---')
-      console.log(response.orders);
+      if (response.orders) {
+        console.log(`--- ${response.count} ORDERS AVAILABLE ---`)
+        console.log(response.orders);
+      } else console.log(response)
     });
-    // socket.on('orders:available', function packageResponse(e) {
-    //   console.log(e)
-    // });
-    // console.log(socket.id)
+
   }
 
   pickupPackage() {
     socket.emit('driver:pickup', this.name, (response) => {
-      this.currentOrders.push(response.order);
-      console.log('--- NEW ORDER PICKED UP ---')
-      console.log(response.order)
-      console.log('--- CURRENT ORDERS ---')
-      console.log(this.currentOrders)
+      this.currentOrders.push(response);
+      console.log('--- NEW ORDER PICKED UP ---');
+      console.log(response);
+      console.log('--- CURRENT ORDERS ---');
+      console.log(this.currentOrders);
 
     });
   }
 
   deliverPackage() {
-    const deliveredOrder = this.currentOrders.shift();
-    if (deliveredOrder) {
+    if (this.currentOrders.length > 0) {
+      const deliveredOrder = this.currentOrders.shift();
       socket.emit('driver:delivery', this.name, deliveredOrder);
       console.log('Package delivered. Thank you!');
-    } else console.log('Package does not exist.');
+    } else console.log('No packages to deliver.');
   }
 };
 
 const driver = new Driver();
 setInterval(() => driver.requestPackage(), 800);
-setInterval(() => driver.pickupPackage(), 1200);
-setInterval(() => driver.deliverPackage(), 4500);
+setInterval(() => driver.pickupPackage(), 600);
+setInterval(() => driver.deliverPackage(), 1000);
 
