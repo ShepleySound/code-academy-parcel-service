@@ -57,10 +57,11 @@ module.exports = (io, socket) => {
       );
       console.log(`Driver ${name} picked up order ${givenPackage.order.orderID}`);
 
-      const messageQueue = MessageQueue.sync(givenPackage.order.storeID);
-      messageQueue.enqueueMessage(givenPackage)
-      socket.to(userMap[givenPackage.order.storeID]).emit('vendor:notification');
-      // console.log(messageQueue)
+      notifyVendor(givenPackage, socket);
+
+      // const messageQueue = MessageQueue.sync(givenPackage.order.storeID);
+      // messageQueue.enqueueMessage(givenPackage)
+      // socket.to(userMap[givenPackage.order.storeID]).emit('vendor:notification');
       
 
       // Use the storeID of the package to determine where the message emits to.
@@ -82,11 +83,13 @@ module.exports = (io, socket) => {
     }
     console.log(`Driver ${name} has delivered order ${deliveredOrder.orderID}`);
 
-    const messageQueue = MessageQueue.sync(matchedOrder.order.storeID);
-    messageQueue.enqueueMessage(matchedOrder)
-    socket.to(userMap[matchedOrder.order.storeID]).emit('vendor:notification');
-    // socket.emit('vendor:complete', matchedOrder);
-    // socket.to(userMap[deliveredOrder.storeID]).emit('vendor:complete', (matchedOrder))
+    notifyVendor(matchedOrder, socket)
 
   });
 };
+
+function notifyVendor(event, socket) {
+  const messageQueue = MessageQueue.sync(event.order.storeID);
+  messageQueue.enqueueMessage(event);
+  socket.to(messageQueue.socketID).emit('vendor:notification');
+}
