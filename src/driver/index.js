@@ -55,7 +55,7 @@ class Driver {
 };
 
 const driver = new Driver();
-setInterval(() => driver.requestPackage(), 2500);
-setInterval(() => driver.pickupPackage(), 3000);
-setInterval(() => driver.deliverPackage(), 8000);
+setInterval(() => driver.requestPackage(), 800);
+setInterval(() => driver.pickupPackage(), 1200);
+setInterval(() => driver.deliverPackage(), 4500);
 

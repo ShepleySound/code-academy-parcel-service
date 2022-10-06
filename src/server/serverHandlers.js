@@ -17,10 +17,12 @@ const ordersList = [];
 const userMap = {};
 
 module.exports = (io, socket) => {
-  socket.on('vendor:sync', (storeID) => {
-    console.log(storeID);
-    MessageQueue.sync(storeID);
-
+  // console.log(socket.id)
+  socket.on('vendor:sync', (storeID, callback) => {
+    const messageQueue = MessageQueue.sync(storeID);
+    messageQueue.syncSocket(socket.id);
+    callback(messageQueue.messages);
+    messageQueue.messages = [];
   });
   socket.on('ready', function packageListener(e){
     const event = new Event('ready', e);
@@ -45,6 +47,7 @@ module.exports = (io, socket) => {
   socket.on('driver:pickup', (name, callback) => {
     const readyIndex = ordersList.findIndex(order => order.status === 'ready');
     const givenPackage = ordersList[readyIndex];
+    
     if (givenPackage) {
       ordersList[readyIndex].status = 'transit';
       ordersList[readyIndex].time = new Date();
@@ -53,9 +56,22 @@ module.exports = (io, socket) => {
         givenPackage,
       );
       console.log(`Driver ${name} picked up order ${givenPackage.order.orderID}`);
+
+      const messageQueue = MessageQueue.sync(givenPackage.order.storeID);
+      messageQueue.enqueueMessage(givenPackage)
+      socket.to(userMap[givenPackage.order.storeID]).emit('vendor:notification');
+      // console.log(messageQueue)
+      
+
       // Use the storeID of the package to determine where the message emits to.
-      socket.to(userMap[givenPackage.order.storeID]).emit('pickup:message', (givenPackage));
+      // socket.to(userMap[givenPackage.order.storeID]).emit('vendor:pickup', (givenPackage));
     }
+  });
+
+  socket.on('vendor:retrieveMessages', (storeID, callback) => {
+
+    const messageQueue = MessageQueue.sync(storeID);
+    callback(messageQueue.dequeueMessage());
   });
 
   socket.on('driver:delivery', (name, deliveredOrder) => {
@@ -65,7 +81,12 @@ module.exports = (io, socket) => {
       matchedOrder.status = 'delivered';
     }
     console.log(`Driver ${name} has delivered order ${deliveredOrder.orderID}`);
-    socket.to(userMap[deliveredOrder.storeID]).emit('delivery:msg', (matchedOrder));
+
+    const messageQueue = MessageQueue.sync(matchedOrder.order.storeID);
+    messageQueue.enqueueMessage(matchedOrder)
+    socket.to(userMap[matchedOrder.order.storeID]).emit('vendor:notification');
+    // socket.emit('vendor:complete', matchedOrder);
+    // socket.to(userMap[deliveredOrder.storeID]).emit('vendor:complete', (matchedOrder))
 
   });
 };

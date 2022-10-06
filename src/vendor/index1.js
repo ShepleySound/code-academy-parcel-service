@@ -22,18 +22,31 @@ class Vendor {
     // HARDCODED FOR NOW, CHANGE THIS LATER
     this.storeID = id;
     socket.on('connect', () => {
-      socket.emit('vendor:sync', this.storeID)
+      socket.emit('vendor:sync', this.storeID, (messages) => {
+        console.log('--- SYNCING MESSAGES ---')
+        console.log(messages)
+      })
     });
+
+    socket.on('vendor:messages')
     // socket.on('delivered', function vendorListener(e) {
     //   console.log(`Thank you, ${e.customer}`);
     // });
-    socket.on('pickup:message', ({order, driver, time}) => {
-      console.log(`Order ${order.orderID} was picked up by ${driver} at ${time}`)
+
+    socket.on('vendor:notification', () => {
+      console.log('--- INCOMING MESSAGE ---')
+      socket.emit('vendor:retrieveMessages', (this.storeID), (messages) => {
+        console.log(messages)
+      })
     });
-    socket.on('delivery:msg', ({order, driver, time}) => {
-      // console.log('hello')
-      console.log(`Order ${order.orderID} was delivered by ${driver} at ${time}`)
-    });
+
+    // socket.on('vendor:pickup', ({order, driver, time}) => {
+    //   console.log(`Order ${order.orderID} was picked up by ${driver} at ${time}`)
+    // });
+
+    // socket.on('vendor:complete', ({order, driver, time}) => {
+    //   console.log(`Order ${order.orderID} was delivered by ${driver} at ${time}`);
+    // });
   }
     
   // This may be useful later.
@@ -65,8 +78,8 @@ const vendor = new Vendor('dc547');
 // const vendor4 = new Vendor('758f7');
 // const vendor5 = new Vendor('f60fd');
 
-setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 1000);
-setInterval(() => vendor.readyOrder(chance.name(), chance.address()), 4000);
+setTimeout(() => vendor.readyOrder(chance.name(), chance.address()), 200);
+setInterval(() => vendor.readyOrder(chance.name(), chance.address()), 1000);
 // setTimeout(() => vendor3.readyOrder(chance.name(), chance.address()), 8000);
 // setTimeout(() => vendor4.readyOrder(chance.name(), chance.address()), 8000);
 // setTimeout(() => vendor5.readyOrder(chance.name(), chance.address()), 8000);
